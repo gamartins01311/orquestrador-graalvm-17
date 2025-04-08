@@ -12,7 +12,7 @@
 
     <groupId>orquestrador</groupId>
     <artifactId>orquestrador.java.17</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>orquestrador.java.17</name>
     <description>Orquestrador de testes POC java 17 com Spring Boot</description>
 
@@ -84,6 +84,10 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+            </plugin>
 
             <!-- Spring Boot plugin com AOT -->
             <plugin>
@@ -93,6 +97,8 @@
                     <image>
                         <cleanCache>true</cleanCache>
                         <env>
+                            <DD_PROFILING_ENABLED>true</DD_PROFILING_ENABLED>
+                            <BP_JVM_VERSION>17</BP_JVM_VERSION>
                             <BP_DATADOG_ENABLED>true</BP_DATADOG_ENABLED>
                         </env>
                     </image>
@@ -103,40 +109,40 @@
 
 
     <profiles>
-<!--        <profile>-->
-<!--            <id>native</id>-->
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.graalvm.buildtools</groupId>-->
-<!--                        <artifactId>native-maven-plugin</artifactId>-->
-<!--                        <version>0.9.27</version>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>native-image</id>-->
-<!--                                <goals>-->
-<!--                                    <goal>compile</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                        <configuration>-->
-<!--                            <mainClass>orquestrador.graalvm.Application</mainClass>-->
-<!--                            <buildArgs>-->
-<!--                                <buildArg>-Ddd.profiling.enabled=true</buildArg>-->
-<!--                                <buildArg>&#45;&#45;report-unsupported-elements-at-runtime</buildArg>-->
-<!--                                <buildArg>&#45;&#45;allow-incomplete-classpath</buildArg>-->
-<!--                                <buildArg>&#45;&#45;initialize-at-run-time=jnr.unixsocket.UnixSocketChannel</buildArg>-->
-<!--                                <buildArg>&#45;&#45;initialize-at-run-time=jnr.constants.platform.Shutdown</buildArg>-->
-<!--                                <buildArg>&#45;&#45;initialize-at-run-time=jnr.unixsocket,jnr.constants</buildArg>-->
-<!--                                <buildArg>&#45;&#45;enable-all-security-services</buildArg>-->
-<!--                                <buildArg>&#45;&#45;enable-url-protocols=http,https</buildArg>-->
-<!--                                <buildArg>-J-javaagent:/home/jenkins-agent/dd-java-agent.jar</buildArg>-->
-<!--                            </buildArgs>-->
-<!--                        </configuration>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--        </profile>-->
+        <!--        <profile>-->
+        <!--            <id>native</id>-->
+        <!--            <build>-->
+        <!--                <plugins>-->
+        <!--                    <plugin>-->
+        <!--                        <groupId>org.graalvm.buildtools</groupId>-->
+        <!--                        <artifactId>native-maven-plugin</artifactId>-->
+        <!--                        <version>0.9.27</version>-->
+        <!--                        <executions>-->
+        <!--                            <execution>-->
+        <!--                                <id>native-image</id>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>compile</goal>-->
+        <!--                                </goals>-->
+        <!--                            </execution>-->
+        <!--                        </executions>-->
+        <!--                        <configuration>-->
+        <!--                            <mainClass>orquestrador.graalvm.Application</mainClass>-->
+        <!--                            <buildArgs>-->
+        <!--                                <buildArg>-Ddd.profiling.enabled=true</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;report-unsupported-elements-at-runtime</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;allow-incomplete-classpath</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;initialize-at-run-time=jnr.unixsocket.UnixSocketChannel</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;initialize-at-run-time=jnr.constants.platform.Shutdown</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;initialize-at-run-time=jnr.unixsocket,jnr.constants</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;enable-all-security-services</buildArg>-->
+        <!--                                <buildArg>&#45;&#45;enable-url-protocols=http,https</buildArg>-->
+        <!--                                <buildArg>-J-javaagent:/home/jenkins-agent/dd-java-agent.jar</buildArg>-->
+        <!--                            </buildArgs>-->
+        <!--                        </configuration>-->
+        <!--                    </plugin>-->
+        <!--                </plugins>-->
+        <!--            </build>-->
+        <!--        </profile>-->
         <profile>
             <id>native-teste</id>
             <build>
@@ -148,6 +154,8 @@
                             <configuration>
                                 <image>
                                     <env>
+                                        <DD_PROFILING_ENABLED>true</DD_PROFILING_ENABLED>
+                                        <BP_JVM_VERSION>17</BP_JVM_VERSION>
                                         <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                                     </env>
                                 </image>
