@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orquestrador-java-17
+  namespace: projetos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orquestrador-java-17
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "8126"
+        proxy.istio.io/config: |
+          holdApplicationUntilProxyStarts: true
+      labels:
+        app: orquestrador-java-17
+        tags.datadoghq.com/env: prod
+        tags.datadoghq.com/service: orquestrador-java
+        tags.datadoghq.com/version: "1.0.0"
+        admission.datadoghq.com/enabled: "true"
+    spec:
+      containers:
+        - name: orquestrador-java-17
+          image: localhost:5000/orquestrador.java.17:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DD_TRACE_AGENT_URL
+              value: "http://datadog.datadog.svc.cluster.local:8126"
+            - name: DD_AGENT_HOST
+              value: "datadog.datadog.svc.cluster.local"
+            - name: DD_TRACE_AGENT_PORT
+              value: "8126"
+            - name: DD_ENV
+              value: "prod"
+            - name: DD_SERVICE
+              value: "orquestrador-java-17"
+            - name: DD_VERSION
+              value: "1.0.0"
+            - name: DD_PROFILING_ENABLED
+              value: "true"
+            - name: DD_LOGS_INJECTION
+              value: "true"
+            - name: DD_APPSEC_ENABLED
+              value: "true"
+            - name: DD_IAST_ENABLED
+              value: "true"
+            - name: DD_APPSEC_SCA_ENABLED
+              value: "true"
+            - name: DD_TRACE_SAMPLE_RATE
+              value: "1.0"
+            - name: DATADOG_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: datadog-secret
+                  key: api-key
+            - name: DATADOG_APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: datadog-secret
+                  key: app-key

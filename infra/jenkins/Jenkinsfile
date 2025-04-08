@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        JAVA_HOME = '/opt/graalvm'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
+        IMAGE_NAME = 'orquestrador.java.17'
+        IMAGE_TAG = '1.0.0'
+        IMAGE_REGISTRY = 'localhost:5000'
+    }
+
+    stages {
+        stage('Verificar Java') {
+            steps {
+                sh 'java -version'
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                script {
+                    if (fileExists('orquestrador-graalvm-17')) {
+                        deleteDir()
+                    }
+                }
+                withCredentials([usernamePassword(credentialsId: 'github-token-credentials-id', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/gamartins01311/orquestrador-graalvm-17.git
+                        ls -lah orquestrador-graalvm-17
+                    '''
+                }
+            }
+        }
+
+
+        stage('Build com Maven + Paketo (Native Image)') {
+            steps {
+                dir('orquestrador-graalvm-17') {
+                    sh """
+                        chmod +x ./mvnw
+                        ./mvnw spring-boot:build-image \\
+                            -P native,native-teste \\
+                            -Dspring-boot.build-image.imageName=${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \\
+                            -DskipTests
+                    """
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
+            }
+        }
+
+        stage('Deploy to K3s') {
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig-k3', variable: 'KUBECONFIG_FILE')]) {
+                    dir('orquestrador-graalvm-17') {
+                        sh '''
+                            mkdir -p ~/.kube
+                            cp $KUBECONFIG_FILE ~/.kube/config
+                            kubectl apply -f infra/manifests/deployment.yaml
+                            kubectl apply -f infra/manifests/service.yaml
+                            kubectl apply -f infra/manifests/gateway.yaml
+                            kubectl apply -f infra/manifests/virtualservice.yaml
+                            kubectl apply -f infra/manifests/destinationrule.yaml
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    deleteDir()
+                }
+            }
+        }
+    }
+}
