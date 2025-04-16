@@ -19,12 +19,12 @@ spec:
         app: orquestrador-java-17
         tags.datadoghq.com/env: prod
         tags.datadoghq.com/service: orquestrador-java
-        tags.datadoghq.com/version: "1.0.5"
+        tags.datadoghq.com/version: "1.0.6"
         admission.datadoghq.com/enabled: "true"
     spec:
       containers:
         - name: orquestrador-java-17
-          image: localhost:5000/orquestrador.java.17:1.0.5
+          image: localhost:5000/orquestrador.java.17:1.0.6
           ports:
             - containerPort: 8080
           env:
