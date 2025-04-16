@@ -13,19 +13,18 @@ spec:
       annotations:
         sidecar.istio.io/inject: "true"
         traffic.sidecar.istio.io/excludeOutboundPorts: "8126"
-        proxy.istio.io/config:
-          holdApplicationUntilProxyStarts: true
+        proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'
         admission.datadoghq.com/java-lib.version: "v1"
       labels:
         app: orquestrador-java-17
         tags.datadoghq.com/env: prod
         tags.datadoghq.com/service: orquestrador-java
-        tags.datadoghq.com/version: "1.0.3"
+        tags.datadoghq.com/version: "1.0.4"
         admission.datadoghq.com/enabled: "true"
     spec:
       containers:
         - name: orquestrador-java-17
-          image: localhost:5000/orquestrador.java.17:1.0.3
+          image: localhost:5000/orquestrador.java.17:1.0.4
           ports:
             - containerPort: 8080
           env:
@@ -40,7 +39,7 @@ spec:
             - name: DD_SERVICE
               value: "orquestrador-java-17"
             - name: DD_VERSION
-              value: "1.0.3"
+              value: "1.0.4"
             - name: DD_PROFILING_ENABLED
               value: "true"
             - name: DD_LOGS_INJECTION
@@ -53,11 +52,11 @@ spec:
               value: "true"
             - name: DD_TRACE_SAMPLE_RATE
               value: "1.0"
-#            - name: DATADOG_API_KEY
-#              valueFrom:
-#                secretKeyRef:
-#                  name: datadog-secret
-#                  key: api-key
+            - name: DATADOG_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: datadog-secret
+                  key: api-key
 #            - name: DATADOG_APP_KEY
 #              valueFrom:
 #                secretKeyRef:
