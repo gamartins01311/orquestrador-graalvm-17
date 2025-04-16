@@ -32,9 +32,9 @@ function make_request {
   echo "$response_time"
 }
 
-for round in {1..10}; do
+for round in {1..100}; do
   for cpf in "${cpfs[@]}"; do
-    time_novt=$(make_request "http://192.168.15.28/orquestrador/api/java21/contratos/novt/$cpf")
+    time_novt=$(make_request "http://192.168.15.28/orquestrador-17/api/java21/contratos/novt/$cpf")
     total_time_novt=$((total_time_novt + time_novt))
     count_novt=$((count_novt + 1))
     if (( count_novt % 10 == 0 )); then
